@@ -4,6 +4,7 @@
 package org.ssor.boss.card.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,6 +99,14 @@ public class CardService {
 			throw new NotFoundException("Resource not found with id: " + id);
 		}
 		return result.get();
+	}
+	
+	public List<CardTypeEntity> findAllCardTypes() throws IllegalArgumentException, NotFoundException {
+		List<CardTypeEntity> cardTypes = cardTypeDao.findAll();
+		if(cardTypes.isEmpty()) {
+			throw new NotFoundException("Resource not found");
+		}
+		return cardTypes;
 	}
 	
 	public void deleteById(Integer id) throws IllegalArgumentException, NotFoundException {
