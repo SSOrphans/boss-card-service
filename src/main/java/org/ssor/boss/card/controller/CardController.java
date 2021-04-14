@@ -8,9 +8,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,60 +33,69 @@ import javassist.NotFoundException;
 public class CardController {
 	@Autowired
 	private CardService cardService;
-	
-	@GetMapping(path = "/types",produces = { "application/json" })
+
+	@GetMapping(path = "/types", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
+			MediaType.TEXT_PLAIN_VALUE })
 	public ResponseEntity<Object> getCardTypes() {
 		List<CardTypeEntity> cardTypes = new ArrayList<CardTypeEntity>();
 		try {
 			cardTypes = cardService.findAllCardTypes();
-		}catch (NotFoundException e) {
-			return new ResponseEntity<Object>(cardTypes, HttpStatus.NO_CONTENT);
+		} catch (NotFoundException e) {
+			return new ResponseEntity<Object>("No Card Types Found.", HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<Object>(cardTypes,HttpStatus.OK);
+		return new ResponseEntity<Object>(cardTypes, HttpStatus.OK);
 	}
 	
-	@PostMapping(path = "",produces = { "application/json" }, consumes = { "application/json","application/xml" })
+	@GetMapping(path = "", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
+			MediaType.TEXT_PLAIN_VALUE })
+	public ResponseEntity<Object> getAllCards() {
+		List<CardEntity> cards = new ArrayList<CardEntity>();
+		try {
+			cards = cardService.findAllCards();
+		} catch (NotFoundException e) {
+			return new ResponseEntity<Object>("No Cards Found.", HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<Object>(cards, HttpStatus.OK);
+	}
+
+	@PostMapping(path = "", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
+			MediaType.TEXT_PLAIN_VALUE }, consumes = { MediaType.APPLICATION_JSON_VALUE,
+					MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_PLAIN_VALUE })
 	public ResponseEntity<Object> addCard(@RequestBody CardDto cardDto) {
 		CardEntity card;
-		try
-	    {
+		try {
 			card = cardService.add(cardDto);
-	    }
-	    catch (IllegalArgumentException | NotFoundException e)
-	    {
-	      return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
-	    }
+		} catch (IllegalArgumentException e) {
+			return new ResponseEntity<Object>("Invalid request data.", HttpStatus.BAD_REQUEST);
+		}
 		return new ResponseEntity<Object>(card, HttpStatus.CREATED);
 	}
-	
-	@PutMapping(path = "",produces = { "application/json" }, consumes = { "application/json","application/xml" })
-	public ResponseEntity<Object> updateCard(@RequestBody CardDto cardDto) {
+
+	@PutMapping(path = "/{card_id}", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
+			MediaType.TEXT_PLAIN_VALUE }, consumes = { MediaType.APPLICATION_JSON_VALUE,
+					MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_PLAIN_VALUE })
+	public ResponseEntity<Object> updateCard(@PathVariable("card_id") String cardId, @RequestBody CardDto cardDto) {
 		CardEntity newCard;
-		try
-	    {
+		try {
+			cardDto.setId(Integer.parseInt(cardId));
 			newCard = cardService.update(cardDto);
-	    }
-	    catch (IllegalArgumentException e)
-	    {
-	      return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
-	    } catch (NotFoundException e) {
-	    	return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+		} catch (IllegalArgumentException e) {
+			return new ResponseEntity<Object>("Invalid request data.", HttpStatus.BAD_REQUEST);
+		} catch (NotFoundException e) {
+			return new ResponseEntity<Object>("No Card Found.", HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<Object>(newCard, HttpStatus.OK);
-		
+
 	}
-	
-	@DeleteMapping(path = "", consumes = { "application/json","application/xml" })
-	public  ResponseEntity<Object> deleteCardById(@RequestBody CardEntity card) {
-		try
-	    {
-			cardService.deleteById(card.getId());
-	    }
-		catch (IllegalArgumentException e)
-	    {
-	      return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
-	    } catch (NotFoundException e) {
-	    	return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+
+	@DeleteMapping(path = "/{card_id}",produces = { MediaType.TEXT_PLAIN_VALUE })
+	public ResponseEntity<Object> deleteCardById(@PathVariable("card_id") String cardId) {
+		try {
+			cardService.deleteById(Integer.parseInt(cardId));
+		} catch (IllegalArgumentException e) {
+			return new ResponseEntity<Object>("Invalid request data.", HttpStatus.BAD_REQUEST);
+		} catch (NotFoundException e) {
+			return new ResponseEntity<Object>("No Card Found.", HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<Object>(HttpStatus.OK);
 	}

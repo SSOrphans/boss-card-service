@@ -29,12 +29,12 @@ public class CardService {
 	@Autowired
 	private CardTypeRepository cardTypeDao;
 
-	public CardEntity add(CardDto cardDto) throws IllegalArgumentException, NotFoundException {
+	public CardEntity add(CardDto cardDto) throws IllegalArgumentException {
 
 		CardEntity card = cardDto.convertToCardEntity();
 		Optional<CardTypeEntity> cardTypeOpt = cardTypeDao.findById(cardDto.getTypeId());
 		if (cardTypeOpt.isEmpty())
-			throw new NotFoundException("Resource not found with id: " + cardDto.getTypeId());
+			throw new IllegalArgumentException("Resource not found with id: " + cardDto.getTypeId());
 
 		card.setCardType(cardTypeOpt.get());
 		card.setCreated(LocalDateTime.now());
@@ -115,6 +115,14 @@ public class CardService {
 			throw new NotFoundException("Resource not found with id: " + id);
 		}
 		cardDao.deleteById(id);
+	}
+
+	public List<CardEntity> findAllCards() throws NotFoundException {
+		List<CardEntity> cards = cardDao.findAll();
+		if(cards.isEmpty()) {
+			throw new NotFoundException("Resource not found");
+		}
+		return cards;
 	}
 
 }
