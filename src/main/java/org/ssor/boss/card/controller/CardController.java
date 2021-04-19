@@ -6,6 +6,8 @@ package org.ssor.boss.card.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -61,7 +63,7 @@ public class CardController {
 	@PostMapping(path = "", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
 			MediaType.TEXT_PLAIN_VALUE }, consumes = { MediaType.APPLICATION_JSON_VALUE,
 					MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_PLAIN_VALUE })
-	public ResponseEntity<Object> addCard(@RequestBody CardDto cardDto) {
+	public ResponseEntity<Object> addCard(@RequestBody @Valid CardDto cardDto) {
 		CardEntity card;
 		try {
 			card = cardService.add(cardDto);
@@ -74,7 +76,7 @@ public class CardController {
 	@PutMapping(path = "/{card_id}", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
 			MediaType.TEXT_PLAIN_VALUE }, consumes = { MediaType.APPLICATION_JSON_VALUE,
 					MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_PLAIN_VALUE })
-	public ResponseEntity<Object> updateCard(@PathVariable("card_id") String cardId, @RequestBody CardDto cardDto) {
+	public ResponseEntity<Object> updateCard(@PathVariable("card_id") @Valid String cardId, @RequestBody @Valid CardDto cardDto) {
 		CardEntity newCard;
 		try {
 			cardDto.setId(Integer.parseInt(cardId));
@@ -89,7 +91,7 @@ public class CardController {
 	}
 
 	@DeleteMapping(path = "/{card_id}",produces = { MediaType.TEXT_PLAIN_VALUE })
-	public ResponseEntity<Object> deleteCardById(@PathVariable("card_id") String cardId) {
+	public ResponseEntity<Object> deleteCardById( @PathVariable("card_id") @Valid String cardId) {
 		try {
 			cardService.deleteById(Integer.parseInt(cardId));
 		} catch (IllegalArgumentException e) {

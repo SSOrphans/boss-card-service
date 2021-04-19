@@ -24,7 +24,9 @@ public class CardEntityTest {
 
 	@Test
 	void test_CanEvalEqual() {
-		LocalDateTime currTime = LocalDateTime.now();
+		LocalDateTime created = LocalDateTime.now();
+		LocalDate expirationDate = LocalDate.of(2025, 1, 1);
+		LocalDate activeSince = created.toLocalDate();
 		CardTypeEntity cardType = new CardTypeEntity(1, "Debit");
 		CardEntity cardA = new CardEntity();
 		CardEntity cardB = new CardEntity();
@@ -34,8 +36,9 @@ public class CardEntityTest {
 		cardA.setCardType(cardType);
 		cardA.setNumberHash("1234123412341234");
 		cardA.setAccountId(1);
-		cardA.setCreated(currTime);
-		cardA.setExpirationDate(LocalDate.of(2025, 1, 1));
+		cardA.setCreated(created);
+		cardA.setActiveSince(activeSince);
+		cardA.setExpirationDate(expirationDate);
 		cardA.setPin(1111);
 		cardA.setCvv(111);
 		cardA.setActive(false);
@@ -46,8 +49,9 @@ public class CardEntityTest {
 		cardB.setCardType(cardType);
 		cardB.setNumberHash("1234123412341234");
 		cardB.setAccountId(1);
-		cardB.setCreated(currTime);
-		cardB.setExpirationDate(LocalDate.of(2025, 1, 1));
+		cardB.setCreated(created);
+		cardB.setActiveSince(activeSince);
+		cardB.setExpirationDate(expirationDate);
 		cardB.setPin(1111);
 		cardB.setCvv(111);
 		cardB.setActive(false);
@@ -59,6 +63,7 @@ public class CardEntityTest {
 		cardC.setNumberHash("1234123412341234");
 		cardC.setAccountId(2);
 		cardC.setCreated(LocalDateTime.of(2021, 1, 1, 0, 0));
+		cardC.setActiveSince(cardC.getCreated().toLocalDate());
 		cardC.setExpirationDate(LocalDate.of(2026, 1, 1));
 		cardC.setPin(2222);
 		cardC.setCvv(222);
@@ -72,15 +77,18 @@ public class CardEntityTest {
 
 	@Test
 	void test_CanConvertToCardDto() {
-		LocalDateTime currTime = LocalDateTime.now();
+		LocalDateTime created = LocalDateTime.now();
+		LocalDate expirationDate = LocalDate.of(2025, 1, 1);
+		LocalDate activeSince = created.toLocalDate();
 		CardEntity cardA = new CardEntity();
 		CardTypeEntity cardType = new CardTypeEntity(1, "");
 		cardA.setId(1);
 		cardA.setCardType(cardType);
 		cardA.setNumberHash("1234123412341234");
 		cardA.setAccountId(1);
-		cardA.setCreated(currTime);
-		cardA.setExpirationDate(LocalDate.of(2025, 1, 1));
+		cardA.setCreated(created);
+		cardA.setActiveSince(activeSince);
+		cardA.setExpirationDate(expirationDate);
 		cardA.setPin(1111);
 		cardA.setCvv(111);
 		cardA.setActive(false);
@@ -89,11 +97,12 @@ public class CardEntityTest {
 
 		CardDto cardDtoB = new CardDto();
 		cardDtoB.setId(1);
-		cardDtoB.setTypeId(1);
+		cardDtoB.setTypeId(cardType.getId());
 		cardDtoB.setNumberHash("1234123412341234");
 		cardDtoB.setAccountId(1);
-		cardDtoB.setCreated(currTime);
-		cardDtoB.setExpirationDate(LocalDate.of(2025, 1, 1));
+		cardDtoB.setCreated(created);
+		cardDtoB.setActiveSince(activeSince);
+		cardDtoB.setExpirationDate(expirationDate);
 		cardDtoB.setPin(1111);
 		cardDtoB.setCvv(111);
 		cardDtoB.setActive(false);

@@ -26,6 +26,7 @@ public class CardTypeRepositoryTest {
 	public CardTypeRepository cardTypeRepository;
 
 	public CardTypeEntity cardTypeA;
+	
 	@BeforeEach
 	public void setup() {
 		cardTypeA = new CardTypeEntity(1,"Debit");
@@ -37,11 +38,10 @@ public class CardTypeRepositoryTest {
 		assertThat(result).isNotNull().isEmpty();
 	}
 	
-	@Disabled
 	@Test
 	public void test_CanCRUD() {
 		cardTypeRepository.save(cardTypeA);
-		CardTypeEntity result = cardTypeRepository.findById(1).get();
+		CardTypeEntity result = cardTypeRepository.getOne(1);
 		assertThat(result).isNotNull().isEqualTo(cardTypeA);
 		cardTypeA.setName("Credit");
 		result.setName("Credit");

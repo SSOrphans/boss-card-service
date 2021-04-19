@@ -40,55 +40,27 @@ public class CardService {
 		card.setCreated(LocalDateTime.now());
 		return cardDao.save(card);
 	}
-	
+
 	public CardEntity update(CardDto cardDto) throws IllegalArgumentException, NotFoundException {
-
-		if (cardDto == null) {
-			throw new IllegalArgumentException();
-		}
-
 		if (!cardDao.existsById(cardDto.getId()))
 			throw new NotFoundException("Resource not found with id: " + cardDto.getId());
 
 		CardEntity card = cardDao.getOne(cardDto.getId());
+		card.setNumberHash(cardDto.getNumberHash());
+		card.setAccountId(cardDto.getAccountId());
+		card.setCreated(cardDto.getCreated());
+		card.setActiveSince(cardDto.getActiveSince());
+		card.setExpirationDate(cardDto.getExpirationDate());
+		card.setPin(cardDto.getPin());
+		card.setCvv(cardDto.getCvv());
+		card.setConfirmed(cardDto.getConfirmed());
+		card.setActive(cardDto.getActive());
+		card.setStolen(cardDto.getStolen());
 		
-		if(cardDto.getNumberHash() != null) {
-			card.setNumberHash(cardDto.getNumberHash());
-		}
-		if(cardDto.getAccountId() != null) {
-			card.setAccountId(cardDto.getAccountId());
-		}
-		if(cardDto.getCreated() != null) {
-			card.setCreated(cardDto.getCreated());
-		}
-		if(cardDto.getActiveSince() != null) {
-			card.setActiveSince(cardDto.getActiveSince());
-		}
-		if(cardDto.getExpirationDate() != null) {
-			card.setExpirationDate(cardDto.getExpirationDate());
-		}
-		if(cardDto.getPin() != null) {
-			card.setPin(cardDto.getPin());
-		}
-		if(cardDto.getCvv() != null) {
-			card.setCvv(cardDto.getCvv());
-		}
-		if(cardDto.getConfirmed() != null) {
-			card.setConfirmed(cardDto.getConfirmed());
-		}
-		if(cardDto.getActive() != null) {
-			card.setActive(cardDto.getActive());
-		}
-		if(cardDto.getStolen() != null) {
-			card.setStolen(cardDto.getStolen());
-		}
-		
-		if (cardDto.getTypeId() != null) {
-			Optional<CardTypeEntity> cardTypeOpt = cardTypeDao.findById(cardDto.getTypeId());
-			if (cardTypeOpt.isEmpty())
-				throw new NotFoundException("Resource not found with id: " + cardDto.getTypeId());
-			card.setCardType(cardTypeOpt.get());
-		}
+		Optional<CardTypeEntity> cardTypeOpt = cardTypeDao.findById(cardDto.getTypeId());
+		if (cardTypeOpt.isEmpty())
+			throw new NotFoundException("Resource not found with id: " + cardDto.getTypeId());
+		card.setCardType(cardTypeOpt.get());
 
 		return cardDao.save(card);
 	}
@@ -100,15 +72,15 @@ public class CardService {
 		}
 		return result.get();
 	}
-	
+
 	public List<CardTypeEntity> findAllCardTypes() throws IllegalArgumentException, NotFoundException {
 		List<CardTypeEntity> cardTypes = cardTypeDao.findAll();
-		if(cardTypes.isEmpty()) {
+		if (cardTypes.isEmpty()) {
 			throw new NotFoundException("Resource not found");
 		}
 		return cardTypes;
 	}
-	
+
 	public void deleteById(Integer id) throws IllegalArgumentException, NotFoundException {
 
 		if (!cardDao.existsById(id)) {
@@ -119,7 +91,7 @@ public class CardService {
 
 	public List<CardEntity> findAllCards() throws NotFoundException {
 		List<CardEntity> cards = cardDao.findAll();
-		if(cards.isEmpty()) {
+		if (cards.isEmpty()) {
 			throw new NotFoundException("Resource not found");
 		}
 		return cards;

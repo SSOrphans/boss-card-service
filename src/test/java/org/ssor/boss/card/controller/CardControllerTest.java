@@ -63,7 +63,9 @@ public class CardControllerTest {
 		cardTypesE.add(new CardTypeEntity(1,"Debit"));
 		cardTypesE.add(new CardTypeEntity(2,"Credit"));
 		
-		LocalDateTime currTime = LocalDateTime.now();
+		LocalDateTime created = LocalDateTime.now();
+		LocalDate expirationDate = LocalDate.of(2025, 1, 1);
+		LocalDate activeSince = created.toLocalDate();
 		cardA = new CardEntity();
 		cardE = new CardEntity();
 		
@@ -72,11 +74,13 @@ public class CardControllerTest {
 		cardA.setCardType(cardTypesA.get(1));
 		cardA.setNumberHash("1234123412341234");
 		cardA.setAccountId(1);
-		cardA.setCreated(currTime);
-		cardA.setExpirationDate(LocalDate.of(2025, 1, 1));
+		cardA.setCreated(created);
+		cardA.setActiveSince(activeSince);
+		cardA.setExpirationDate(expirationDate);
 		cardA.setPin(1111);
 		cardA.setCvv(111);
 		cardA.setActive(false);
+		
 		cardA.setConfirmed(false);
 		cardA.setStolen(false);
 		
@@ -84,8 +88,9 @@ public class CardControllerTest {
 		cardE.setCardType(cardTypesA.get(1));
 		cardE.setNumberHash("1234123412341234");
 		cardE.setAccountId(1);
-		cardE.setCreated(currTime);
-		cardE.setExpirationDate(LocalDate.of(2025, 1, 1));
+		cardE.setCreated(created);
+		cardE.setActiveSince(activeSince);
+		cardE.setExpirationDate(expirationDate);
 		cardE.setPin(1111);
 		cardE.setCvv(111);
 		cardE.setActive(false);
@@ -107,7 +112,7 @@ public class CardControllerTest {
 	public void test_CanUpdateCard() throws Exception {
 		when(cardService.update(cardA.convertToCardDto())).thenReturn(cardA);
 
-		mvc.perform(put("/api/cards").contentType(MediaType.APPLICATION_JSON)
+		mvc.perform(put("/api/cards/1").contentType(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsString(cardA.convertToCardDto()))).andExpect(status().isOk())
 				.andExpect(content().json(mapper.writeValueAsString(cardE)));
 	}
@@ -117,7 +122,7 @@ public class CardControllerTest {
 		doNothing().when(cardService).deleteById(any(Integer.class));
 		
 
-		mvc.perform(delete("/api/cards").contentType(MediaType.APPLICATION_JSON)
+		mvc.perform(delete("/api/cards/1").contentType(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsString(cardA))).andExpect(status().isOk());
 	}
 	
