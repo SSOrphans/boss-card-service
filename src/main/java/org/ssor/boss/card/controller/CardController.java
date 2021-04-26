@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.ssor.boss.card.controller;
 
@@ -20,9 +20,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.ssor.boss.card.dto.CardDto;
-import org.ssor.boss.card.entity.CardEntity;
-import org.ssor.boss.card.entity.CardTypeEntity;
+import org.ssor.boss.core.transfer.CardDto;
+import org.ssor.boss.core.entity.Card;
 import org.ssor.boss.card.service.CardService;
 import javassist.NotFoundException;
 
@@ -36,22 +35,11 @@ public class CardController {
 	@Autowired
 	private CardService cardService;
 
-	@GetMapping(path = "/types", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
-			MediaType.TEXT_PLAIN_VALUE })
-	public ResponseEntity<Object> getCardTypes() {
-		List<CardTypeEntity> cardTypes = new ArrayList<CardTypeEntity>();
-		try {
-			cardTypes = cardService.findAllCardTypes();
-		} catch (NotFoundException e) {
-			return new ResponseEntity<Object>("No Card Types Found.", HttpStatus.NOT_FOUND);
-		}
-		return new ResponseEntity<Object>(cardTypes, HttpStatus.OK);
-	}
-	
+
 	@GetMapping(path = "", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
 			MediaType.TEXT_PLAIN_VALUE })
 	public ResponseEntity<Object> getAllCards() {
-		List<CardEntity> cards = new ArrayList<CardEntity>();
+		List<Card> cards = new ArrayList<Card>();
 		try {
 			cards = cardService.findAllCards();
 		} catch (NotFoundException e) {
@@ -64,7 +52,7 @@ public class CardController {
 			MediaType.TEXT_PLAIN_VALUE }, consumes = { MediaType.APPLICATION_JSON_VALUE,
 					MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_PLAIN_VALUE })
 	public ResponseEntity<Object> addCard(@RequestBody @Valid CardDto cardDto) {
-		CardEntity card;
+		Card card;
 		try {
 			card = cardService.add(cardDto);
 		} catch (IllegalArgumentException e) {
@@ -77,7 +65,7 @@ public class CardController {
 			MediaType.TEXT_PLAIN_VALUE }, consumes = { MediaType.APPLICATION_JSON_VALUE,
 					MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_PLAIN_VALUE })
 	public ResponseEntity<Object> updateCard(@PathVariable("card_id") @Valid String cardId, @RequestBody @Valid CardDto cardDto) {
-		CardEntity newCard;
+		Card newCard;
 		try {
 			cardDto.setId(Integer.parseInt(cardId));
 			newCard = cardService.update(cardDto);
