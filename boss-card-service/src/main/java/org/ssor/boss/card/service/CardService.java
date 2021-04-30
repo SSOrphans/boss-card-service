@@ -23,7 +23,7 @@ import javassist.NotFoundException;
 @Service
 public class CardService {
 	@Autowired
-	private CardRepository cardDao;
+	CardRepository cardDao;
 
 	public Card add(CardDto cardDto) throws IllegalArgumentException {
 
