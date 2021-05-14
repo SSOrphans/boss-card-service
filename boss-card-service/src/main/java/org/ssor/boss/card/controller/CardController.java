@@ -27,6 +27,19 @@ import java.util.List;
 public class CardController {
     @Autowired
     private CardService cardService;
+    
+    @GetMapping(path="/{card_id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
+        MediaType.TEXT_PLAIN_VALUE})
+    public ResponseEntity<Object> getCard(@PathVariable("card_id") @Valid String cardId){
+    	Card card;
+    	try {
+    		card = cardService.findById(Integer.parseInt(cardId));
+    	}
+    	catch(NotFoundException e) {
+    		return new ResponseEntity<>("Card not found.", HttpStatus.NOT_FOUND);
+    	}
+    	return new ResponseEntity<>(card, HttpStatus.OK);
+    }
 
 
     @GetMapping(path = "", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
