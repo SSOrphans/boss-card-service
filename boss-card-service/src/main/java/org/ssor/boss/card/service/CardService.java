@@ -47,6 +47,7 @@ public class CardService {
 		card.setConfirmed(cardDto.getConfirmed());
 		card.setActive(cardDto.getActive());
 		card.setStolen(cardDto.getStolen());
+		card.setCardType(cardDto.getCardType());
 
 		return cardDao.save(card);
 	}
