@@ -3,18 +3,16 @@
  */
 package org.ssor.boss.card.service;
 
+import javassist.NotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.ssor.boss.core.entity.Card;
+import org.ssor.boss.core.repository.CardRepository;
+import org.ssor.boss.core.transfer.CardDto;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.ssor.boss.core.transfer.CardDto;
-import org.ssor.boss.core.entity.CardType;
-import org.ssor.boss.core.repository.CardRepository;
-import org.ssor.boss.core.entity.Card;
-
-import javassist.NotFoundException;
 
 /**
  * @author Derrian Harris
@@ -22,19 +20,20 @@ import javassist.NotFoundException;
  */
 @Service
 public class CardService {
-	@Autowired
-	CardRepository cardDao;
+    @Autowired
+    CardRepository cardDao;
 
-	public Card add(CardDto cardDto) throws IllegalArgumentException {
+    public Card add(CardDto cardDto) throws IllegalArgumentException {
 
-		Card card = cardDto.convertToCardEntity();
-		card.setCreated(LocalDateTime.now());
-		return cardDao.save(card);
-	}
+        Card card = cardDto.convertToCardEntity();
+        card.setCreated(LocalDateTime.now());
+        return cardDao.save(card);
+    }
 
-	public Card update(CardDto cardDto) throws IllegalArgumentException, NotFoundException {
-		if (!cardDao.existsById(cardDto.getId()))
+    public Card update(CardDto cardDto) throws IllegalArgumentException, NotFoundException {
+        if (!cardDao.existsById(cardDto.getId())) {
 			throw new NotFoundException("Resource not found with id: " + cardDto.getId());
+		}
 
 		Card card = cardDao.getOne(cardDto.getId());
 		card.setNumberHash(cardDto.getNumberHash());
@@ -52,28 +51,27 @@ public class CardService {
 		return cardDao.save(card);
 	}
 
-	public Card findById(Integer id) throws IllegalArgumentException, NotFoundException {
-		Optional<Card> result = cardDao.findById(id);
-		if (result.isEmpty()) {
-			throw new NotFoundException("Resource not found with id: " + id);
-		}
-		return result.get();
-	}
+    public Card findById(Integer id) throws IllegalArgumentException, NotFoundException {
+        Optional<Card> result = cardDao.findById(id);
+        if (result.isEmpty()) {
+            throw new NotFoundException("Resource not found with id: " + id);
+        }
+        return result.get();
+    }
 
-	public void deleteById(Integer id) throws IllegalArgumentException, NotFoundException {
+    public void deleteById(Integer id) throws IllegalArgumentException, NotFoundException {
 
-		if (!cardDao.existsById(id)) {
-			throw new NotFoundException("Resource not found with id: " + id);
-		}
-		cardDao.deleteById(id);
-	}
+        if (!cardDao.existsById(id)) {
+            throw new NotFoundException("Resource not found with id: " + id);
+        }
+        cardDao.deleteById(id);
+    }
 
-	public List<Card> findAllCards() throws NotFoundException {
-		List<Card> cards = cardDao.findAll();
-		if (cards.isEmpty()) {
-			throw new NotFoundException("Resource not found");
-		}
-		return cards;
-	}
-
+    public List<Card> findAllCards() throws NotFoundException {
+        List<Card> cards = cardDao.findAll();
+        if (cards.isEmpty()) {
+            throw new NotFoundException("Resource not found");
+        }
+        return cards;
+    }
 }
