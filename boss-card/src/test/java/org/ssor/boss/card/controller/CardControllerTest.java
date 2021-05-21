@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @SpringBootTest
 @AutoConfigureMockMvc
-public class CardControllerTest {
+class CardControllerTest {
 
     @Autowired
     ObjectMapper mapper;
@@ -86,7 +86,7 @@ public class CardControllerTest {
 
 
     @Test
-    public void test_CanAddCard() throws Exception {
+    void test_CanAddCard() throws Exception {
         when(cardService.add(cardA.convertToCardDto())).thenReturn(cardA);
 
         mvc.perform(post("/api/cards").contentType(MediaType.APPLICATION_JSON)
@@ -95,7 +95,7 @@ public class CardControllerTest {
     }
 
     @Test
-    public void test_CanUpdateCard() throws Exception {
+    void test_CanUpdateCard() throws Exception {
         when(cardService.update(cardA.convertToCardDto())).thenReturn(cardA);
 
         mvc.perform(put("/api/cards/1").contentType(MediaType.APPLICATION_JSON)
@@ -104,7 +104,7 @@ public class CardControllerTest {
     }
 
     @Test
-    public void test_CanDeleteCardById() throws Exception {
+    void test_CanDeleteCardById() throws Exception {
         doNothing().when(cardService).deleteById(any(Integer.class));
         mvc.perform(delete("/api/cards/1").contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(cardA))).andExpect(status().isOk());

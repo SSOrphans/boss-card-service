@@ -27,18 +27,21 @@ import java.util.List;
 public class CardController {
     @Autowired
     private CardService cardService;
+    
+    private final String invalidRespStr = "Invalid request data.";
+    private final String noCardRespStr = "No Cards Found.";
 
 
     @GetMapping(path = "", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_PLAIN_VALUE})
     public ResponseEntity<Object> getAllCards() {
-        List<Card> cards = new ArrayList<Card>();
+        List<Card> cards = new ArrayList<>();
         try {
             cards = cardService.findAllCards();
         } catch (NotFoundException e) {
-            return new ResponseEntity<Object>("No Cards Found.", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(noCardRespStr, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<Object>(cards, HttpStatus.OK);
+        return new ResponseEntity<>(cards, HttpStatus.OK);
     }
 
     @PostMapping(path = "", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
@@ -49,9 +52,9 @@ public class CardController {
         try {
             card = cardService.add(cardDto);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<Object>("Invalid request data.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(invalidRespStr, HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<Object>(card, HttpStatus.CREATED);
+        return new ResponseEntity<>(card, HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/{card_id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
@@ -63,11 +66,11 @@ public class CardController {
             cardDto.setId(Integer.parseInt(cardId));
             newCard = cardService.update(cardDto);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<Object>("Invalid request data.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(invalidRespStr, HttpStatus.BAD_REQUEST);
         } catch (NotFoundException e) {
-            return new ResponseEntity<Object>("No Card Found.", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(noCardRespStr, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<Object>(newCard, HttpStatus.OK);
+        return new ResponseEntity<>(newCard, HttpStatus.OK);
 
     }
 
@@ -76,10 +79,10 @@ public class CardController {
         try {
             cardService.deleteById(Integer.parseInt(cardId));
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<Object>("Invalid request data.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(invalidRespStr, HttpStatus.BAD_REQUEST);
         } catch (NotFoundException e) {
-            return new ResponseEntity<Object>("No Card Found.", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(noCardRespStr, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<Object>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

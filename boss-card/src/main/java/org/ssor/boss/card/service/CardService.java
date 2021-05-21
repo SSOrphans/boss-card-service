@@ -23,6 +23,8 @@ import javassist.NotFoundException;
 public class CardService {
 	@Autowired
 	CardRepository cardDao;
+	
+	private final String resourceNotFoundStr = "Resource not found with id: ";
 
 	public Card add(CardDto cardDto) throws IllegalArgumentException {
 
@@ -33,7 +35,7 @@ public class CardService {
 
 	public Card update(CardDto cardDto) throws IllegalArgumentException, NotFoundException {
 		if (!cardDao.existsById(cardDto.getId()))
-			throw new NotFoundException("Resource not found with id: " + cardDto.getId());
+			throw new NotFoundException(resourceNotFoundStr + cardDto.getId());
 
 		Card card = cardDao.getOne(cardDto.getId());
 		card.setNumberHash(cardDto.getNumberHash());
@@ -53,7 +55,7 @@ public class CardService {
 	public Card findById(Integer id) throws IllegalArgumentException, NotFoundException {
 		Optional<Card> result = cardDao.findById(id);
 		if (result.isEmpty()) {
-			throw new NotFoundException("Resource not found with id: " + id);
+			throw new NotFoundException(resourceNotFoundStr + id);
 		}
 		return result.get();
 	}
@@ -61,7 +63,7 @@ public class CardService {
 	public void deleteById(Integer id) throws IllegalArgumentException, NotFoundException {
 
 		if (!cardDao.existsById(id)) {
-			throw new NotFoundException("Resource not found with id: " + id);
+			throw new NotFoundException(resourceNotFoundStr + id);
 		}
 		cardDao.deleteById(id);
 	}
