@@ -9,10 +9,9 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.ssor.boss.core.transfer.CardDto;
-import org.ssor.boss.core.entity.CardType;
-import org.ssor.boss.core.repository.CardRepository;
 import org.ssor.boss.core.entity.Card;
+import org.ssor.boss.core.repository.CardRepository;
+import org.ssor.boss.core.transfer.CardDto;
 
 import javassist.NotFoundException;
 
