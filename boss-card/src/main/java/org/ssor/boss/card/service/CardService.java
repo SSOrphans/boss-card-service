@@ -24,7 +24,7 @@ public class CardService {
 	@Autowired
 	CardRepository cardDao;
 	
-	private final String resourceNotFoundStr = "Resource not found with id: ";
+	private static final String RESOURCE_NOT_FOUND_WITH_STR = "Resource not found with id: ";
 
 	public Card add(CardDto cardDto) throws IllegalArgumentException {
 
@@ -35,7 +35,7 @@ public class CardService {
 
 	public Card update(CardDto cardDto) throws IllegalArgumentException, NotFoundException {
 		if (!cardDao.existsById(cardDto.getId()))
-			throw new NotFoundException(resourceNotFoundStr + cardDto.getId());
+			throw new NotFoundException(RESOURCE_NOT_FOUND_WITH_STR + cardDto.getId());
 
 		Card card = cardDao.getOne(cardDto.getId());
 		card.setNumberHash(cardDto.getNumberHash());
@@ -55,7 +55,7 @@ public class CardService {
 	public Card findById(Integer id) throws IllegalArgumentException, NotFoundException {
 		Optional<Card> result = cardDao.findById(id);
 		if (result.isEmpty()) {
-			throw new NotFoundException(resourceNotFoundStr + id);
+			throw new NotFoundException(RESOURCE_NOT_FOUND_WITH_STR + id);
 		}
 		return result.get();
 	}
@@ -63,7 +63,7 @@ public class CardService {
 	public void deleteById(Integer id) throws IllegalArgumentException, NotFoundException {
 
 		if (!cardDao.existsById(id)) {
-			throw new NotFoundException(resourceNotFoundStr + id);
+			throw new NotFoundException(RESOURCE_NOT_FOUND_WITH_STR + id);
 		}
 		cardDao.deleteById(id);
 	}
