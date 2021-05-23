@@ -8,10 +8,9 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-@SpringBootApplication
-@EnableJpaRepositories(basePackages = { "org.ssor.boss.core.repository" })
-@EntityScan(basePackages = { "org.ssor.boss.core.entity" })
-@EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class })
+@SpringBootApplication(scanBasePackages = "org.ssor.*", exclude = {SecurityAutoConfiguration.class})
+@EntityScan(basePackages = "org.ssor.boss.*")
+@EnableJpaRepositories(basePackages = "org.ssor.boss.*")
 @EnableSwagger2
 public class BossCardServiceApplication {
     public static void main(String[] args) {
