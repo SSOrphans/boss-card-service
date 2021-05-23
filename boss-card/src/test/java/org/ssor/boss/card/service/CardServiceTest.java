@@ -31,7 +31,7 @@ import static org.ssor.boss.core.entity.CardType.CARD_PLAIN;
  *
  */
 @ExtendWith(MockitoExtension.class)
-public class CardServiceTest
+class CardServiceTest
 {
 	@Mock
 	CardRepository cardRepository;

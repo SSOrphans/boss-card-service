@@ -104,7 +104,7 @@ class CardControllerTest
 	}
 
 	@Test
-	public void test_CanGetCardById() throws Exception
+	void test_CanGetCardById() throws Exception
 	{
 		expectedContent = mapper.writeValueAsString(cardE);
 		when(cardService.findById(cardA.getId())).thenReturn(cardA);
@@ -115,7 +115,7 @@ class CardControllerTest
 	}
 	
 	@Test
-	public void test_CanGetCardById_NotFoundException() throws Exception
+	void test_CanGetCardById_NotFoundException() throws Exception
 	{
 		when(cardService.findById(cardA.getId())).thenThrow(new NotFoundException("test"));
 		mockResponse = mvc.perform(get("/api/cards/1")).andReturn().getResponse();
