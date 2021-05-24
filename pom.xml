@@ -12,12 +12,12 @@
 	</parent>
 	<modules>
 		<module>boss-core</module>
-		<module>boss-card-service</module>
+		<module>boss-card</module>
 	</modules>
 
 	<groupId>org.ssor</groupId>
-	<artifactId>boss-card</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<artifactId>boss-card-service</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
 	<properties>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
