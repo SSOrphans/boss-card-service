@@ -21,6 +21,7 @@ import java.util.List;
  * @author Derrian Harris
  *
  */
+@CrossOrigin
 @RestController
 @RequestMapping("/api/cards")
 public class CardController
