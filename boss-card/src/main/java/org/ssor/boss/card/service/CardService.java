@@ -28,7 +28,7 @@ public class CardService {
 
 	public Card add(CardDto cardDto) throws IllegalArgumentException {
 
-		Card card = cardDto.convertToCardEntity();
+		var card = cardDto.convertToCardEntity();
 		card.setCreated(LocalDateTime.now());
 		return cardDao.save(card);
 	}
@@ -37,7 +37,7 @@ public class CardService {
 		if (!cardDao.existsById(cardDto.getId()))
 			throw new NotFoundException(RESOURCE_NOT_FOUND_WITH_STR + cardDto.getId());
 
-		Card card = cardDao.getOne(cardDto.getId());
+		var card = cardDao.getOne(cardDto.getId());
 		card.setNumberHash(cardDto.getNumberHash());
 		card.setAccountId(cardDto.getAccountId());
 		card.setCreated(cardDto.getCreated());
