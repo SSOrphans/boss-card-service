@@ -1,6 +1,3 @@
-/**
- *
- */
 package org.ssor.boss.card.controller;
 
 import javassist.NotFoundException;
@@ -10,16 +7,19 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.ssor.boss.card.service.CardService;
+import org.ssor.boss.card.transfer.UserCardsOutput;
 import org.ssor.boss.core.entity.Card;
 import org.ssor.boss.core.transfer.CardDto;
+import org.ssor.boss.core.transfer.SecureCardDetails;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * @author Derrian Harris
  *
+ * @author Derrian Harris
  */
 @RestController
 @RequestMapping("/api/cards")
