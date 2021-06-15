@@ -20,8 +20,10 @@ import org.ssor.boss.card.service.CardService;
 import org.ssor.boss.core.entity.Card;
 import org.ssor.boss.core.entity.CardType;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,35 +64,34 @@ class CardControllerTest
 	void setup()
 	{
 
-		LocalDateTime created = LocalDateTime.now();
-		LocalDate expirationDate = LocalDate.of(2025, 1, 1);
-		LocalDate activeSince = created.toLocalDate();
+		final var created = Instant.now().toEpochMilli();
+		final var expirationDate = LocalDate.of(2025, 1, 1).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
 		cardA = new Card();
 		cardE = new Card();
 
 		cardA.setId(1);
-		cardA.setCardType(CardType.CARD_PLAIN);
+		cardA.setType(CardType.CARD_PLAIN);
 		cardA.setNumberHash("1234123412341234");
 		cardA.setAccountId(1);
 		cardA.setCreated(created);
-		cardA.setActiveSince(activeSince);
+		cardA.setActiveSince(created);
 		cardA.setExpirationDate(expirationDate);
-		cardA.setPin(1111);
-		cardA.setCvv(111);
+		cardA.setPin("1111");
+		cardA.setCvv("111");
 		cardA.setActive(false);
 
 		cardA.setConfirmed(false);
 		cardA.setStolen(false);
 
 		cardE.setId(1);
-		cardE.setCardType(CardType.CARD_PLAIN);
+		cardE.setType(CardType.CARD_PLAIN);
 		cardE.setNumberHash("1234123412341234");
 		cardE.setAccountId(1);
 		cardE.setCreated(created);
-		cardE.setActiveSince(activeSince);
+		cardE.setActiveSince(created);
 		cardE.setExpirationDate(expirationDate);
-		cardE.setPin(1111);
-		cardE.setCvv(111);
+		cardE.setPin("1111");
+		cardE.setCvv("111");
 		cardE.setActive(false);
 		cardE.setConfirmed(false);
 		cardE.setStolen(false);

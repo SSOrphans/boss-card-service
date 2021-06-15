@@ -1,12 +1,8 @@
-/**
- *
- */
 package org.ssor.boss.card.service;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.ssor.boss.core.entity.Card;
@@ -29,7 +25,7 @@ public class CardService {
 	public Card add(CardDto cardDto) throws IllegalArgumentException {
 
 		var card = cardDto.convertToCardEntity();
-		card.setCreated(LocalDateTime.now());
+		card.setCreated(Instant.now().toEpochMilli());
 		return cardDao.save(card);
 	}
 
@@ -45,10 +41,10 @@ public class CardService {
 		card.setExpirationDate(cardDto.getExpirationDate());
 		card.setPin(cardDto.getPin());
 		card.setCvv(cardDto.getCvv());
-		card.setConfirmed(cardDto.getConfirmed());
-		card.setActive(cardDto.getActive());
-		card.setStolen(cardDto.getStolen());
-		card.setCardType(cardDto.getCardType());
+		card.setConfirmed(cardDto.isConfirmed());
+		card.setActive(cardDto.isActive());
+		card.setStolen(cardDto.isStolen());
+		card.setType(cardDto.getCardType());
 
 		return cardDao.save(card);
 	}
