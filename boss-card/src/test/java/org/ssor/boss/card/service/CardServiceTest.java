@@ -13,8 +13,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.ssor.boss.core.entity.Card;
 import org.ssor.boss.core.repository.CardRepository;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -43,29 +45,30 @@ class CardServiceTest
 	@BeforeEach
 	void setup()
 	{
-		LocalDateTime datetime = LocalDateTime.now();
+		final var datetime = Instant.now().toEpochMilli();
+		final var expiration = LocalDate.of(2025, 1, 1).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
 		cardA = new Card();
 		cardA.setId(1);
-		cardA.setCardType(CARD_PLAIN);
+		cardA.setType(CARD_PLAIN);
 		cardA.setNumberHash("1234123412341234");
 		cardA.setAccountId(1);
 		cardA.setCreated(datetime);
-		cardA.setExpirationDate(LocalDate.of(2025, 1, 1));
-		cardA.setPin(1111);
-		cardA.setCvv(111);
+		cardA.setExpirationDate(expiration);
+		cardA.setPin("1111");
+		cardA.setCvv("111");
 		cardA.setActive(false);
 		cardA.setConfirmed(false);
 		cardA.setStolen(false);
 
 		cardE = new Card();
 		cardE.setId(1);
-		cardE.setCardType(CARD_PLAIN);
+		cardE.setType(CARD_PLAIN);
 		cardE.setNumberHash("1234123412341234");
 		cardE.setAccountId(1);
 		cardE.setCreated(datetime);
-		cardE.setExpirationDate(LocalDate.of(2025, 1, 1));
-		cardE.setPin(1111);
-		cardE.setCvv(111);
+		cardE.setExpirationDate(expiration);
+		cardE.setPin("1111");
+		cardE.setCvv("111");
 		cardE.setActive(false);
 		cardE.setConfirmed(false);
 		cardE.setStolen(false);
