@@ -3,7 +3,7 @@ package org.ssor.boss.card.service;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.ssor.boss.core.entity.Card;
 import org.ssor.boss.core.repository.CardRepository;
@@ -16,10 +16,9 @@ import javassist.NotFoundException;
  *
  */
 @Service
+@RequiredArgsConstructor
 public class CardService {
-	@Autowired
-	CardRepository cardDao;
-	
+	private final CardRepository cardDao;
 	private static final String RESOURCE_NOT_FOUND_WITH_STR = "Resource not found with id: ";
 
 	public Card add(CardDto cardDto) throws IllegalArgumentException {

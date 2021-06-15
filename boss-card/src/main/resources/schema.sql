@@ -16,6 +16,21 @@ CREATE TABLE IF NOT EXISTS boss.user
     PRIMARY KEY (id)
 );
 
+CREATE TABLE IF NOT EXISTS boss.account_holder
+(
+    user_id       INT         UNSIGNED NOT NULL UNIQUE,
+    full_name	  VARCHAR(64)          NOT NULL,
+    dob           DATE                 NOT NULL,
+    ssn           CHAR(64)             NOT NULL UNIQUE,
+    address       CHAR(255)            NOT NULL,
+    city          CHAR(64)             NOT NULL,
+    state         CHAR(32)             NOT NULL,
+    zip           INT         UNSIGNED NOT NULL,
+    phone	      CHAR(16)             NOT NULL,
+
+    FOREIGN KEY (user_id) REFERENCES boss.user (id)
+);
+
 CREATE TABLE IF NOT EXISTS boss.card
 (
     id              INT      UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE,

@@ -4,7 +4,14 @@ insert into boss.user (type_id, branch_id, username, email, password, created, d
 values (5, 1, 'Admin', 'admin@boss.com', '$2y$10$GodHI/CpXYoIxC2r9SBIROarrnmzdTl4vnCgoy3tEs4//RDYbtf/. ', 0, NULL, true, false);
 
 insert into boss.user (type_id, branch_id, username, email, password, created, deleted, enabled, locked)
-values (4, 1, 'Sora', 'sorakatadzuma@gmail.com', '$2y$10$8GxWo9OZN9FRri1vR7wC.e7cVfIApSOFLL9dwDcKUgSracduyIak6 ', 0, NULL, true, false);
+values (5, 1, 'Sora', 'sorakatadzuma@gmail.com', '$2y$10$8GxWo9OZN9FRri1vR7wC.e7cVfIApSOFLL9dwDcKUgSracduyIak6 ', 0, NULL, true, false);
+
+-- Holders
+insert into boss.account_holder(user_id, full_name, dob, ssn, address, city, state, zip, phone)
+values (1, 'Ad min', 19750625, '123-45-6789', '392 Nowhere St', 'Lost', '??', 95641, '+14867971253');
+
+insert into boss.account_holder(user_id, full_name, dob, ssn, address, city, state, zip, phone)
+values (2, 'John Christman', 19980116, '987-65-4321', '6307 Honeysuckle Rd', 'Little Rock', 'AR', 72206, '+14236219552');
 
 -- Cards
 insert into boss.card (type_id, number_hash, last_four, account_id, created, active_since, expiration_date, pin,
