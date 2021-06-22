@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS boss.card
     type_id         TINYINT  UNSIGNED NOT NULL,
     number_hash     CHAR(64)          NOT NULL UNIQUE,
     last_four       SMALLINT UNSIGNED NOT NULL,
+    user_id         INT      UNSIGNED NOT NULL,
     account_id      INT      UNSIGNED NOT NULL,
     created         BIGINT   UNSIGNED NOT NULL,
     active_since    BIGINT   UNSIGNED NOT NULL,
