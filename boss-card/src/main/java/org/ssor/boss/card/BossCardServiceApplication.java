@@ -13,8 +13,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SpringBootApplication
 @ComponentScan("org.ssor.boss")
 @EntityScan({ "org.ssor.boss.core.entity" })
-@CrossOrigin(origins = "http://localhost:4200")
-@EnableJpaRepositories({ "org.ssor.boss.core.repository" })
+@CrossOrigin(origins = { "http://localhost:4200", "http://localhost:3000" })
+@EnableJpaRepositories({ "org.ssor.boss.core.repository", "org.ssor.boss.card.repository" })
 public class BossCardServiceApplication {
     public static void main(String[] args) {
         SpringApplication.run(BossCardServiceApplication.class, args);
