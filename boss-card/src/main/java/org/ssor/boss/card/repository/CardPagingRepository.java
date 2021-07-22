@@ -2,6 +2,7 @@ package org.ssor.boss.card.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 import org.ssor.boss.core.entity.Card;
@@ -16,5 +17,7 @@ public interface CardPagingRepository extends PagingAndSortingRepository<Card, I
 {
   Page<Card> findAllByLastFourStartsWith(String lastFour, Pageable pageable);
   Page<Card> findAllByUserIdAndLastFourStartsWith(int userId, String lastFour, Pageable pageable);
+  Iterable<Card> findAllByUserIdAndLastFourStartsWith(int userId, String lastFour, Sort sortBy);
   Page<Card> findAllByAccountIdAndLastFourStartsWith(int accountId, String lastFour, Pageable pageable);
+  Iterable<Card> findAllByAccountIdAndLastFourStartsWith(int accountId, String lastFour, Sort sortBy);
 }

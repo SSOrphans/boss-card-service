@@ -2,7 +2,6 @@ package org.ssor.boss.card.service;
 
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -15,11 +14,11 @@ import org.ssor.boss.core.repository.CardRepository;
 import org.ssor.boss.core.transfer.CardDto;
 import org.ssor.boss.core.transfer.SecureCardDetails;
 import java.time.Instant;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * @author Derrian Harris
@@ -68,27 +67,151 @@ public class CardService
     return result.get();
   }
 
-  public Page<Card> findByUserId(int userId, FilterParams params) throws NotFoundException
+  /**
+   * Finds a page result for all cards based on the provided filtering parameters.
+   *
+   * @param params The parameters used to filter the page results.
+   * @return The results of paging the cards stored in the database.
+   * @throws NotFoundException If no account with the given ID exists.
+   */
+  public CardPageResult pageCards(FilterParams params) throws NotFoundException
   {
+    final var limit = params.getLimit();
+    if (limit == -1)
+    {
+      final var sortBy = Sort.by(getSortDirection(params.getSortDir()), params.getSortBy().split(","));
+      final var cards = cardPagingRepository.findAll(sortBy);
+      final var cardStream = StreamSupport.stream(cards.spliterator(), false);
+      final var secCards = cardStream.map(SecureCardDetails::new).collect(Collectors.toList());
+      return new CardPageResult(secCards, 0, 1, secCards.size());
+    }
+
     final var sortBy = Sort.by(getSortDirection(params.getSortDir()), params.getSortBy().split(","));
-    final var pageable = PageRequest.of(params.getPage(), params.getLimit(), sortBy);
-    final var cardType = params.getFilter();
+    final var pageable = PageRequest.of(params.getPage(), limit, sortBy);
+    final var keyword = params.getKeyword();
+    final var cards = cardPagingRepository.findAllByLastFourStartsWith(keyword, pageable);
+    if (cards.isEmpty())
+      throw new NotFoundException("Resource not found");
+
+    // Return them all.
+    final var filter = params.getFilter();
+    if (filter.isEmpty())
+    {
+      final var secCards = cards.stream().map(SecureCardDetails::new).collect(Collectors.toList());
+      return new CardPageResult(secCards, cards.getNumber(), cards.getTotalPages(), cards.getNumberOfElements());
+    }
+
+    // Return the filtered version.
+    final var type = CardType.valueOf(filter);
+    final Function<Card, Card> typesThatEqual = c ->
+    {
+      if (c.getType().equals(type))
+        return c;
+      return null;
+    };
+
+    final var secCards = cards.stream().map(typesThatEqual).filter(Objects::nonNull)
+                              .map(SecureCardDetails::new).collect(Collectors.toList());
+    return new CardPageResult(secCards, cards.getNumber(), cards.getTotalPages(), cards.getNumberOfElements());
+  }
+
+  /**
+   * Finds a page result for cards of a given user based on the provided filtering parameters.
+   *
+   * @param userId The ID of the user to get the cards for.
+   * @param params The parameters used to filter the page results.
+   * @return The results of paging the cards by user ID.
+   * @throws NotFoundException If no account with the given ID exists.
+   */
+  public CardPageResult findByUserId(int userId, FilterParams params) throws NotFoundException
+  {
+    final var limit = params.getLimit();
+    if (limit == -1)
+    {
+      final var sortBy = Sort.by(getSortDirection(params.getSortDir()), params.getSortBy().split(","));
+      final var cards = cardPagingRepository.findAllByUserIdAndLastFourStartsWith(userId, params.getKeyword(), sortBy);
+      final var cardStream = StreamSupport.stream(cards.spliterator(), false);
+      final var secCards = cardStream.map(SecureCardDetails::new).collect(Collectors.toList());
+      return new CardPageResult(secCards, 0, 1, secCards.size());
+    }
+
+    final var sortBy = Sort.by(getSortDirection(params.getSortDir()), params.getSortBy().split(","));
+    final var pageable = PageRequest.of(params.getPage(), limit, sortBy);
     final var keyword = params.getKeyword();
     final var cards = cardPagingRepository.findAllByUserIdAndLastFourStartsWith(userId, keyword, pageable);
     if (cards.isEmpty())
-      throw new NotFoundException("Resource not found with User ID: " + userId);
-    return cards;
+      throw new NotFoundException("Resource not found");
+
+    // Return them all.
+    final var filter = params.getFilter();
+    if (filter.isEmpty())
+    {
+      final var secCards = cards.stream().map(SecureCardDetails::new).collect(Collectors.toList());
+      return new CardPageResult(secCards, cards.getNumber(), cards.getTotalPages(), cards.getNumberOfElements());
+    }
+
+    // Return the filtered version.
+    final var type = CardType.valueOf(filter);
+    final Function<Card, Card> typesThatEqual = c ->
+    {
+      if (c.getType().equals(type))
+        return c;
+      return null;
+    };
+
+    final var secCards = cards.stream().map(typesThatEqual).filter(Objects::nonNull)
+                              .map(SecureCardDetails::new).collect(Collectors.toList());
+    return new CardPageResult(secCards, cards.getNumber(), cards.getTotalPages(), cards.getNumberOfElements());
   }
 
-  public Page<Card> findByAccountId(int accountId, FilterParams params) throws NotFoundException
+  /**
+   * Finds a page result for cards of a given account based on the provided filtering parameters.
+   *
+   * @param accountId The ID of the account to get the cards for.
+   * @param params    The parameters used to filter the page results.
+   * @return The results of paging the cards by account ID.
+   * @throws NotFoundException If no account with the given ID exists.
+   */
+  public CardPageResult findByAccountId(int accountId, FilterParams params) throws NotFoundException
   {
+    final var limit = params.getLimit();
+    if (limit == -1)
+    {
+      final var sortBy = Sort.by(getSortDirection(params.getSortDir()), params.getSortBy().split(","));
+      final var cards = cardPagingRepository.findAllByAccountIdAndLastFourStartsWith(accountId, params.getKeyword(),
+                                                                                     sortBy);
+      final var cardStream = StreamSupport.stream(cards.spliterator(), false);
+      final var secCards = cardStream.map(SecureCardDetails::new).collect(Collectors.toList());
+      return new CardPageResult(secCards, 0, 1, secCards.size());
+    }
+
     final var sortBy = Sort.by(getSortDirection(params.getSortDir()), params.getSortBy().split(","));
-    final var pageable = PageRequest.of(params.getPage(), params.getLimit(), sortBy);
+    final var pageable = PageRequest.of(params.getPage(), limit, sortBy);
     final var keyword = params.getKeyword();
     final var cards = cardPagingRepository.findAllByAccountIdAndLastFourStartsWith(accountId, keyword, pageable);
     if (cards.isEmpty())
-      throw new NotFoundException("Resource not found with Account ID: " + accountId);
-    return cards;
+      throw new NotFoundException("Resource not found");
+
+    // Return them all.
+    final var filter = params.getFilter();
+    if (filter.isEmpty())
+    {
+      final var secCards = cards.stream().map(SecureCardDetails::new).collect(Collectors.toList());
+      return new CardPageResult(secCards, cards.getNumber(), cards.getTotalPages(), cards.getNumberOfElements());
+    }
+
+    // Return the filtered version.
+    final var type = CardType.valueOf(filter);
+    final Function<Card, Card> typesThatEqual = c ->
+    {
+      if (c.getType().equals(type))
+        return c;
+      return null;
+    };
+
+    final var secCards = cards.stream().map(typesThatEqual).filter(Objects::nonNull)
+                              .map(SecureCardDetails::new).collect(Collectors.toList());
+    return new CardPageResult(secCards, cards.getNumber(), cards.getTotalPages(), cards.getNumberOfElements());
   }
 
   public void deleteById(Integer id) throws IllegalArgumentException, NotFoundException
@@ -96,44 +219,6 @@ public class CardService
     if (!cardDao.existsById(id))
       throw new NotFoundException(RESOURCE_NOT_FOUND_WITH_STR + id);
     cardDao.deleteById(id);
-  }
-
-  public List<Card> findAllCards() throws NotFoundException
-  {
-    List<Card> cards = cardDao.findAll();
-    if (cards.isEmpty())
-      throw new NotFoundException("Resource not found");
-    return cards;
-  }
-
-  public CardPageResult findAllCards(FilterParams params) throws NotFoundException
-  {
-  	final var sortBy = Sort.by(getSortDirection(params.getSortDir()), params.getSortBy().split(","));
-  	final var pageable = PageRequest.of(params.getPage(), params.getLimit(), sortBy);
-  	final var keyword = params.getKeyword();
-  	final var cards = cardPagingRepository.findAllByLastFourStartsWith(keyword, pageable);
-		if (cards.isEmpty())
-		  throw new NotFoundException("Resource not found");
-
-		// Return them all.
-		final var filter = params.getFilter();
-		if (filter.isEmpty())
-    {
-      final var secCards = cards.stream().map(SecureCardDetails::new).collect(Collectors.toList());
-		  return new CardPageResult(secCards, cards.getNumber(), cards.getTotalPages(), cards.getNumberOfElements());
-    }
-
-		// Return the filtered version.
-		final var type = CardType.valueOf(filter);
-		final Function<Card, Card> typesThatEqual = c -> {
-      if (c.getType().equals(type))
-        return c;
-      return null;
-    };
-
-		final var secCards = cards.stream().map(typesThatEqual).filter(Objects::nonNull)
-                              .map(SecureCardDetails::new).collect(Collectors.toList());
-		return new CardPageResult(secCards, cards.getNumber(), cards.getTotalPages(), cards.getNumberOfElements());
   }
 
   private Sort.Direction getSortDirection(String sortDir)

@@ -16,17 +16,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.ssor.boss.card.service.CardService;
 import org.ssor.boss.card.transfer.CardPageResult;
 import org.ssor.boss.core.entity.Card;
-import org.ssor.boss.core.entity.CardType;
 import org.ssor.boss.core.entity.FilterParams;
 import org.ssor.boss.core.transfer.CardDto;
-import org.ssor.boss.core.transfer.SecureCardDetails;
 import javax.validation.Valid;
-import java.util.stream.Collectors;
+import javax.websocket.server.PathParam;
+import java.util.Optional;
 
 /**
  * @author Derrian Harris
@@ -57,50 +55,31 @@ public class CardController
     return new ResponseEntity<>(card, HttpStatus.OK);
   }
 
-  //  @GetMapping(path = "", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
-  //  public ResponseEntity<Object> getAllCards()
-  //  {
-  //    List<Card> cards;
-  //    try
-  //    {
-  //      cards = cardService.findAllCards();
-  //    }
-  //    catch (NotFoundException e)
-  //    {
-  //      log.debug("Are we ending here?");
-  //      return new ResponseEntity<>(NO_CARD_FOUND_STR, HttpStatus.NOT_FOUND);
-  //    }
-  //
-  //    log.debug("Did succeed in getting data.");
-  //    return new ResponseEntity<>(cards, HttpStatus.OK);
-  //  }
-
   @GetMapping(path = "",
               produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE },
               consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
-  public ResponseEntity<CardPageResult> pageOutCards(@RequestParam(name = "keyword", defaultValue = "") String keyword,
-                                                     @RequestParam(name = "filter", defaultValue = "") String filter,
-                                                     @RequestParam(name = "page", defaultValue = "0") int page,
-                                                     @RequestParam(name = "limit", defaultValue = "5") int limit,
-                                                     @RequestParam(name = "sortBy", defaultValue = "id") String sortBy,
-                                                     @RequestParam(name = "sortDir", defaultValue = "asc")
-                                                         String sortDir)
+  public ResponseEntity<CardPageResult> pageOutCards(@PathParam("keyword") Optional<String> keyword,
+                                                     @PathParam("filter") Optional<String> filter,
+                                                     @PathParam("page") Optional<Integer> page,
+                                                     @PathParam("limit") Optional<Integer> limit,
+                                                     @PathParam("sortBy") Optional<String> sortBy,
+                                                     @PathParam("sortDir") Optional<String> sortDir)
       throws NotFoundException
   {
     final var filterParams = new FilterParams(keyword, filter, page, limit, sortBy, sortDir);
-    return ResponseEntity.ok(cardService.findAllCards(filterParams));
+    return ResponseEntity.ok(cardService.pageCards(filterParams));
   }
 
   @GetMapping(path = "/api/v1/users/{user_id}/cards",
               produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE },
               consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
-  public ResponseEntity<Object> getCardsByUserId(@PathVariable("user_id") int userId,
-                                                 @RequestParam(name = "keyword", defaultValue = "") String keyword,
-                                                 @RequestParam(name = "filter", defaultValue = "") String filter,
-                                                 @RequestParam(name = "page", defaultValue = "0") int page,
-                                                 @RequestParam(name = "limit", defaultValue = "5") int limit,
-                                                 @RequestParam(name = "sort", defaultValue = "id") String sortBy,
-                                                 @RequestParam(name = "sortDir", defaultValue = "asc") String sortDir)
+  public ResponseEntity<CardPageResult> getCardsByUserId(@PathVariable("user_id") int userId,
+                                                         @PathParam("keyword") Optional<String> keyword,
+                                                         @PathParam("filter") Optional<String> filter,
+                                                         @PathParam("page") Optional<Integer> page,
+                                                         @PathParam("limit") Optional<Integer> limit,
+                                                         @PathParam("sortBy") Optional<String> sortBy,
+                                                         @PathParam("sortDir") Optional<String> sortDir)
       throws NotFoundException
   {
     final var filterParams = new FilterParams(keyword, filter, page, limit, sortBy, sortDir);
@@ -111,14 +90,13 @@ public class CardController
   @GetMapping(path = "/api/v1/accounts/{account_id}/cards",
               produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE },
               consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
-  public ResponseEntity<Object> getCardsByAccountId(@PathVariable("account_id") int accountId,
-                                                    @RequestParam(name = "keyword", defaultValue = "") String keyword,
-                                                    @RequestParam(name = "filter", defaultValue = "") String filter,
-                                                    @RequestParam(name = "page", defaultValue = "0") int page,
-                                                    @RequestParam(name = "limit", defaultValue = "5") int limit,
-                                                    @RequestParam(name = "sort", defaultValue = "id") String sortBy,
-                                                    @RequestParam(name = "sortDir", defaultValue = "asc")
-                                                        String sortDir)
+  public ResponseEntity<CardPageResult> getCardsByAccountId(@PathVariable("account_id") int accountId,
+                                                            @PathParam("keyword") Optional<String> keyword,
+                                                            @PathParam("filter") Optional<String> filter,
+                                                            @PathParam("page") Optional<Integer> page,
+                                                            @PathParam("limit") Optional<Integer> limit,
+                                                            @PathParam("sortBy") Optional<String> sortBy,
+                                                            @PathParam("sortDir") Optional<String> sortDir)
       throws NotFoundException
   {
     final var filterParams = new FilterParams(keyword, filter, page, limit, sortBy, sortDir);
