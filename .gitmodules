@@ -1,6 +1,3 @@
 [submodule "boss-core"]
 	path = boss-core
 	url = https://github.com/SSOrphans/boss-core.git
-[submodule "boss-terraform"]
-	path = boss-terraform
-	url = https://github.com/SSOrphans/boss-terraform.git

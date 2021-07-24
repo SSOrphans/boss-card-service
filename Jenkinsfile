@@ -1,12 +1,11 @@
 pipeline {
     agent any
     environment {
-        serviceName = "card"
+        serviceName = "ssor-card"
     }
     tools {
         git 'git'
         maven 'maven'
-        terraform 'terraform'
     }
     stages {
         stage('Git Checkout') {
@@ -30,27 +29,13 @@ pipeline {
                 echo "Building and deploying docker image for $serviceName"
                 withCredentials([string(credentialsId: 'awsRepo', variable: 'awsRepo')]) {
                     script {
-                        docker.build('tf-$serviceName-repo:$commitHash')
+                        docker.build('$serviceName-repo:$commitHash')
                         docker.withRegistry('https://$awsRepo', 'ecr:us-east-2:aws-credentials') {
-                            docker.image('tf-$serviceName-repo:$commitHash').push('$commitHash')
+                            docker.image('$serviceName-repo:$commitHash').push('$commitHash')
                         }
                     }
                 }
             }    
-        }
-        stage('Terraform Init') {
-            steps {
-                dir('boss-terraform/deployment/ecs') {
-                    sh 'terraform init -backend-config=./backends/ohio.hcl'
-                }
-            }
-        }
-        stage('Terraform Apply') {
-            steps {
-                dir('boss-terraform/deployment/ecs') {
-                    sh 'terraform apply -var-file=./region-inputs/ohio.tfvars -auto-approve'
-                }
-            }
         }
     }
     post {
