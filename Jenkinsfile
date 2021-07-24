@@ -1,54 +1,62 @@
-node {
-    try {
-        withEnv(['serviceName=boss-card']) {
-            stage('Checkout') {
-                echo "Checking out $serviceName"
-                checkout scm
+pipeline {
+    agent any
+    environment {
+        serviceName = "card"
+    }
+    tools {
+        git 'git'
+        maven 'maven'
+        terraform 'terraform'
+    }
+    stages {
+        stage('Git Checkout') {
+            steps {
+                echo 'Git Checkout'
+                git branch: 'demo/ecs-test', url: 'https://github.com/SSOrphans/boss-card-service.git'
                 sh 'git submodule update --init'
-                // sh 'cd boss-core'
-                // sh 'git checkout dev'
-                // sh 'cd ..'
             }
-            withEnv(["commitHash=${sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()}"]) {
-                stage('Build') {
-                    withMaven(jdk: 'openjdk-11') {
-                        echo "Building $serviceName with maven"
-                        sh 'mvn clean package'
-                    }
-                }
-                stage('Quality Analysis') {
-                    withCredentials([string(credentialsId: 'sonar-token', variable: 'sonartoken')]) {
-                        withMaven(jdk: 'openjdk-11') {
-                            echo "Performing Quality Analysis for $serviceName"
-                            sh 'mvn clean install'
-                            sh 'mvn sonar:sonar -Dsonar.host.url=http://localhost:9000 -Dsonar.login=$sonartoken'
+        }
+        stage('Build') {
+            steps {
+                echo "Building $serviceName with maven"
+                sh 'mvn clean package'
+            }
+        }
+        stage('Docker Build') {
+            environment {
+                commitHash = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+            }
+            steps {
+                echo "Building and deploying docker image for $serviceName"
+                withCredentials([string(credentialsId: 'awsRepo', variable: 'awsRepo')]) {
+                    script {
+                        docker.build('tf-$serviceName-repo:$commitHash')
+                        docker.withRegistry('https://$awsRepo', 'ecr:us-east-2:aws-credentials') {
+                            docker.image('tf-$serviceName-repo:$commitHash').push('$commitHash')
                         }
                     }
                 }
-                stage('Docker Build') {
-                    withCredentials([string(credentialsId: 'aws-repo', variable: 'awsRepo')]) {
-                        echo "Building and deploying docker image for $serviceName"
-                        docker.build('$serviceName:$commitHash')
-                        docker.withRegistry("https://$awsRepo", 'ecr:us-east-2:aws-credentials') {
-                            docker.image('$serviceName:$commitHash').push("$commitHash")
-                        }
-                    }
+            }    
+        }
+        stage('Terraform Init') {
+            steps {
+                dir('boss-terraform/deployment/ecs') {
+                    sh 'terraform init -backend-config=./backends/ohio.hcl'
                 }
-                stage('Deploy') {
-                    withCredentials([string(credentialsId: 'aws-account-id', variable: 'awsAccountId'), string(credentialsId: 'aws-repo', variable: 'awsRepo')]) {
-                        echo 'Deploying cloudformation..'
-                        sh "aws cloudformation deploy --stack-name boss-stack --template-file ./ecs.yaml --parameter-overrides ApplicationName=$serviceName ApplicationEnvironment=dev ECRRepositoryUri=$awsRepo/$serviceName:$commitHash ExecutionRoleArn=arn:aws:iam::$awsAccountId:role/ecsTaskExecutionRole TargetGroupArn=arn:aws:elasticloadbalancing:us-east-2:$awsAccountId:targetgroup/default/a1d737973d78e824 --role-arn arn:aws:iam::$awsAccountId:role/awsCloudFormationRole --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM --region us-east-2"
-                    }
+            }
+        }
+        stage('Terraform Apply') {
+            steps {
+                dir('boss-terraform/deployment/ecs') {
+                    sh 'terraform apply -var-file=./region-inputs/ohio.tfvars -auto-approve'
                 }
             }
         }
     }
-    catch (exc) {
-        echo "$exc"
-    } finally {
-        stage('Cleanup') {
-            sh 'mvn clean'
-            sh "docker system prune -f"
+    post {
+        cleanup {
+            sh 'docker system prune -f'
+            cleanWs()
         }
     }
 }
