@@ -45,7 +45,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'awsAccountId', variable: 'awsAccountId'), string(credentialsId: 'awsRepo', variable: 'awsRepo')]) {
                     sh 'aws cloudformation deploy --stack-name $serviceName-stack --template-file ./ecs.yaml '+
                     '--parameter-overrides ApplicationName=$serviceName ApplicationEnvironment=dev '+
-                    'ECRRepositoryUri=$awsRepo/$serviceName:$commitHash '+
+                    'ECRRepositoryUri=$awsRepo/$serviceName-repo:$commitHash '+
                     'ExecutionRoleArn=arn:aws:iam::$awsAccountId:role/ecsTaskExecutionRole '+
                     'TargetGroupArn=$targetGroup '+
                     '--role-arn arn:aws:iam::$awsAccountId:role/awsCloudFormationRole '+
