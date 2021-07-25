@@ -8,6 +8,11 @@ pipeline {
         maven 'maven'
     }
     stages {
+        stage('Init submodule') {
+            steps {
+                sh 'git submodule update --init'
+            }
+        }
         stage('Build') {
             steps {
                 echo "Building $serviceName with maven"
