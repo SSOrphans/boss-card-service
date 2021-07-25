@@ -8,13 +8,6 @@ pipeline {
         maven 'maven'
     }
     stages {
-        // stage('Git Checkout') {
-        //     steps {
-        //         echo 'Git Checkout'
-        //         git branch: 'demo/ecs-test', url: 'https://github.com/SSOrphans/boss-card-service.git'
-        //         sh 'git submodule update --init'
-        //     }
-        // }
         stage('Build') {
             steps {
                 echo "Building $serviceName with maven"
