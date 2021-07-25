@@ -51,7 +51,6 @@ Resources:
           AssignPublicIp: ENABLED
           Subnets:
             - !Sub '{{resolve:secretsmanager:SSOrphans/${ApplicationEnvironment}:SecretString:Private-Subnet-A}}'
-            - !Sub '{{resolve:secretsmanager:SSOrphans/${ApplicationEnvironment}:SecretString:Private-Subnet-B}}'
           SecurityGroups:
             - !Sub '{{resolve:secretsmanager:SSOrphans/${ApplicationEnvironment}:SecretString:Base-SecGroup}}'
       LoadBalancers:
