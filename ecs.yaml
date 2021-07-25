@@ -95,13 +95,13 @@ Resources:
           #         - !Sub '/{{resolve:secretsmanager:SSOrphans/${ApplicationEnvironment}:SecretString:dbname}}'
           Essential: true
           Memory: 2048
-          LogConfiguration:
-            LogDriver: awslogs
-            Options:
-              awslogs-group: !Sub /ecs/SSOrphans/${ApplicationName}/${ApplicationEnvironment}
-              awslogs-region: !Ref AWS::Region
-              awslogs-stream-prefix: ecs
-              awslogs-create-group: 'true'
+          # LogConfiguration:
+          #   LogDriver: awslogs
+          #   Options:
+          #     awslogs-group: !Sub /ecs/SSOrphans/${ApplicationName}/${ApplicationEnvironment}
+          #     awslogs-region: !Ref AWS::Region
+          #     awslogs-stream-prefix: ecs
+          #     awslogs-create-group: 'true'
 
   # Optional
   TargetGroup:
