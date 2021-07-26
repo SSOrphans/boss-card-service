@@ -13,10 +13,23 @@ pipeline {
                 sh 'git submodule update --init'
             }
         }
-        stage('Build') {
+        stage('Maven Build') {
             steps {
                 echo "Building $serviceName with maven"
                 sh 'mvn clean package'
+            }
+        }
+        stage('Quality Analysis') {
+            steps {
+                echo "Performing Quality Analysis for $serviceName"
+            }
+        }
+        stage('Quality Gate') {
+            steps {
+                echo "Waiting for Quality Analysis"
+                timeout(time: 1, unit: 'HOURS') { // Just in case something goes wrong, pipeline will be killed after a timeout
+                    waitForQualityGate abortPipeline: true
+                }
             }
         }
         stage('Docker Build') {
