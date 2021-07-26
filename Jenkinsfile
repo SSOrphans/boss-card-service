@@ -27,9 +27,6 @@ pipeline {
         stage('Quality Gate') {
             steps {
                 echo "Waiting for Quality Analysis"
-                timeout(time: 1, unit: 'HOURS') { // Just in case something goes wrong, pipeline will be killed after a timeout
-                    waitForQualityGate abortPipeline: true
-                }
             }
         }
         stage('Docker Build') {
